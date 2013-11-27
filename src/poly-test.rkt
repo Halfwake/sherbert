@@ -10,6 +10,9 @@
                 (posn-y test-posn)))
 
 (let ([test-rect (rect 3 5 7 8)])
+  (check-equal? test-rect
+                (rect 3 5 7 8))
+  
   (check-equal? 3
                 (left test-rect))
   (check-equal? 10

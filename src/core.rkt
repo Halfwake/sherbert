@@ -42,9 +42,9 @@
 
 (define (init-systems! [flags INIT-FLAGS])
   (let ((flag-int (flags->int flags)))
-    (= 0 (if (not (=  0 (_was-init 0)))
-             (_init flag-int)
-             (_init-sub-system flag-int)))))
+    (sdl-success? (if (not (=  0 (_was-init 0)))
+                      (_init flag-int)
+                      (_init-sub-system flag-int)))))
 
 
 (define (quit-systems! [flags '()])

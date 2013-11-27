@@ -3,6 +3,7 @@
 (provide (struct-out posn)
          
          rect
+         rect-sdl-rect
          
          left
          width
@@ -42,7 +43,7 @@
 ;will-executor maybe not needed?
 ;(define rect-collector (make-will-executor))
 
-(struct posn (x y))
+(struct posn (x y) #:transparent)
 
 (struct rect (sdl-rect)
   #:constructor-name make-rect
@@ -50,7 +51,6 @@
 
 (define (rect x y w h)
   (make-rect (_make-rect x y w h)))
-
 
 (define (left rect)
   (_rect-x (rect-sdl-rect rect)))

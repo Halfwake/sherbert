@@ -4,17 +4,21 @@
          "sdl-core.rkt"
          (only-in "sdl-structs.rkt" make-color color-r color-g color-b color-a)
          "sdl-draw.rkt"
-         "_util.rkt")
+         "_util.rkt"
+         ffi/unsafe)
 
 (provide fill-rect!
+         draw-rect!
          fill-renderer!
          set-renderer-draw-color!
          present-renderer!
-         make-color
+         color
          color-r
          color-g
          color-b
          color-a)
+
+(define color make-color)
 
 (define (fill-rect! renderer rect)
   (_fill-rect renderer rect))
@@ -29,6 +33,11 @@
 ;; Outline or something.
 #;(define (fill! renderer)
   (sdl-success? (_fill-rect renderer 0)))
+
+(define (draw-rect! renderer rect)
+  (sdl-success? (_render-draw-rect renderer
+                                   (rect-sdl-rect rect))))
+  
 
 (define (draw-line! posn1 posn2)
   (sdl-success? (_render-draw-line (posn-x posn1)

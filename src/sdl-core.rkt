@@ -110,3 +110,8 @@
   (_fun (_cpointer _renderer) -> _void)
   #:c-id SDL_RenderPresent)
 
+(define-sdl _render-draw-rect
+  (_fun (_cpointer _renderer) (_cpointer _rect) -> _int)
+  #:c-id SDL_RenderDrawRect)
+
+
