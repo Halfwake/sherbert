@@ -47,7 +47,20 @@
 
 (struct rect (sdl-rect)
   #:constructor-name make-rect
-  #:omit-define-syntaxes)
+  #:omit-define-syntaxes
+  #:methods
+  gen:equal+hash
+  [(define (equal-proc a b equal?-recur)
+     (and (equal?-recur (top-left a) (top-left b))
+          (equal?-recur (bottom-right a) (bottom-right b))))
+   ;TODO
+   (define (hash-proc a hash-recur)
+     (+ (hash-recur (width a))
+        (* 3 (hash-recur (height a)))))
+   ;TODO
+   (define (hash2-proc a hash2-recur)
+     (+ (hash2-recur (width a))
+        (hash2-recur (height a))))])
 
 (define (rect x y w h)
   (make-rect (_make-rect x y w h)))

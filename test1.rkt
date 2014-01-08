@@ -11,7 +11,7 @@
 
 #;(with-window win "Draw Test #1" (posn 500 500) (posn 800 600) 0
              (define renderer (make-renderer win -1 0))
-             (set-renderer-draw-color! renderer (make-color 255 128 0 0))
+             (set-renderer-draw-color! renderer (color 255 128 0 0))
              (fill-renderer! renderer)
              (present-renderer! renderer)
              (sleep 4)
@@ -34,7 +34,7 @@
   
   (with-window win "Draw Test #1" (posn 500 500) (posn 800 600) 0
                (define renderer (make-renderer win -1 0))
-               (alternate-colors renderer 0.5 (list (make-color 255 127 0 0) (make-color 127 255 0 0)) 10)
+               (alternate-colors renderer 0.5 (list (color 255 127 0 0) (color 127 255 0 0)) 10)
                (destroy-renderer renderer)))
 
 #;(with-window win "Here we go..." (posn 500 500) (posn 800 600) 0
