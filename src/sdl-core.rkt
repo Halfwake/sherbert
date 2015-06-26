@@ -5,54 +5,49 @@
          ffi/unsafe/alloc
          "sdl-structs.rkt")
 
-(module sdl-core racket)
-(provide (all-defined-out))
-
 (define-ffi-definer define-sdl (ffi-lib "SDL2"))
 
-(define-sdl _init
-  (_fun _uint32 -> _int)
-  #:c-id SDL_Init)
+(module+ system/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_Init
+    (_fun _uint32 -> _int))
+  
+  (define-sdl SDL_InitSubSystem
+    (_fun _uint32 -> _int))
+  
+  (define-sdl SDL_QuitSubSystem
+    (_fun _int32 -> _void))
+  
+  (define-sdl SDL_Quit
+    (_fun -> _void))
 
-(define-sdl _init-sub-system
-  (_fun _uint32 -> _int)
-  #:c-id SDL_InitSubSystem)
+  (define-sdl SDL_WasInit
+    (_fun _uint32 -> _int)))
 
-(define-sdl _quit-sub-system
-  (_fun _int32 -> _void)
-  #:c-id SDL_QuitSubSystem)
+(module+ error/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_GetError
+    (_fun -> _string))
+  
+  (define-sdl SDL_SetError
+    (_fun _string -> _void))
+  
+  (define-sdl SDL_Error
+    (_fun _error-code -> _void)))
 
-(define-sdl _quit
-  (_fun -> _void)
-  #:c-id SDL_Quit)
-
-(define-sdl _was-init
-  (_fun _uint32 -> _int)
-  #:c-id SDL_WasInit)
-
-(define-sdl _get-error
-  (_fun -> _string)
-  #:c-id SDL_GetError)
-
-(define-sdl _set-error
-  (_fun _string -> _void)
-  #:c-id SDL_SetError)
-
-(define-sdl _error
-  (_fun _error-code -> _void)
-  #:c-id SDL_Error)
-
-(define-sdl _load-object
-  (_fun _string -> (_cpointer _void))
-  #:c-id SDL_LoadObject)
-
-(define-sdl _load-function
-  (_fun _string -> (_cpointer _void))
-  #:c-id SDL_LoadFunction)
-
-(define-sdl _unload-object
-  (_fun (_cpointer _void) -> _void)
-  #:c-id SDL_UnloadObject)
+(module+ load/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_LoadObject
+    (_fun _string -> (_cpointer _void)))
+  
+  (define-sdl SDL_LoadFunction
+    (_fun _string -> (_cpointer _void)))
+  
+  (define-sdl SDL_UnloadObject
+    (_fun (_cpointer _void) -> _void)))
 
 ;(define-sdl _sdl-version
 ;  (_fun -> _version)
@@ -62,56 +57,62 @@
 ;  (_fun -> _version)
 ;  #:c-id SDL_Linked_Version)
 
-(define-sdl _rw-from-file
-  (_fun _string -> _rw-ops)
-  #:c-id SDL_RWFromFile)
+(define-sdl SDL_RWFromFile
+  (_fun _string -> _rw-ops))
 
-(define-sdl _destroy-window
-  (_fun (_cpointer _window) -> _void)
-  #:c-id SDL_DestroyWindow)
+(module+ window/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_CreateWindow
+    (_fun _string _int _int _int _int _uint32 -> (_cpointer _window)))
+  
+  (define-sdl SDL_DestroyWindow
+    (_fun (_cpointer _window) -> _void))
+  
+  (define-sdl SDL_SetWindowTitle
+    (_fun (_cpointer _window) _string -> _void)))
 
-(define-sdl _create-window
-  (_fun _string _int _int _int _int _uint32 -> (_cpointer _window))
-  #:c-id SDL_CreateWindow)
+(module+ renderer/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_CreateRenderer
+    (_fun (_cpointer _window) _int _uint32 -> (_cpointer _renderer)))
+  
+  (define-sdl SDL_DestroyRenderer
+    (_fun (_cpointer _renderer) -> _void))
+  
+  (define-sdl SDL_SetRenderDrawColor
+    (_fun (_cpointer _renderer) _int _int _int _int -> _int))
+  
+  (define-sdl SDL_RenderClear
+    (_fun (_cpointer _renderer) -> _int))
+  
+  (define-sdl SDL_RenderPresent
+    (_fun (_cpointer _renderer) -> _void)))
 
-(define-sdl _fill-rect
-  (_fun _surface _rect _uint32 -> _void)
-  #:c-id SDL_FillRect)
+(module+ renderer-draw/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_FillRect
+    (_fun _surface _rect _uint32 -> _void))
+  
+  (define-sdl SDL_RenderDrawRects
+    (_fun (_cpointer _renderer) (_cpointer _rect) _int -> _int))
+  
+  (define-sdl SDL_RenderDrawLine
+    (_fun (_cpointer _renderer) _int _int _int _int -> _int))
+  
+  (define-sdl SDL_RenderDrawRect
+    (_fun (_cpointer _renderer) (_ptr i _rect) -> _int)))
 
-(define-sdl _set-window-title
-  (_fun (_cpointer _window) _string -> _void)
-  #:c-id SDL_SetWindowTitle)
-
-(define-sdl _render-draw-rects
-  (_fun (_cpointer _renderer) (_cpointer _rect) _int -> _int)
-  #:c-id SDL_RenderDrawRects)
-
-(define-sdl _create-renderer
-  (_fun (_cpointer _window) _int _uint32 -> (_cpointer _renderer))
-  #:c-id SDL_CreateRenderer)
-
-(define-sdl _destroy-renderer
-  (_fun (_cpointer _renderer) -> _void)
-  #:c-id SDL_DestroyRenderer)
-
-(define-sdl _set-renderer-draw-color
-  (_fun (_cpointer _renderer) _int _int _int _int -> _int)
-  #:c-id SDL_SetRenderDrawColor)
-
-(define-sdl _render-draw-line
-  (_fun (_cpointer _renderer) _int _int _int _int -> _int)
-  #:c-id SDL_RenderDrawLine)
-
-(define-sdl _render-clear
-  (_fun (_cpointer _renderer) -> _int)
-  #:c-id SDL_RenderClear)
-
-(define-sdl _render-present
-  (_fun (_cpointer _renderer) -> _void)
-  #:c-id SDL_RenderPresent)
-
-(define-sdl _render-draw-rect
-  (_fun (_cpointer _renderer) (_cpointer _rect) -> _int)
-  #:c-id SDL_RenderDrawRect)
-
-
+(module+ event/unsafe
+  (provide (all-defined-out))
+  
+  (define-sdl SDL_WaitEvent
+    (_fun (_cpointer _event) -> _int))
+  
+  (define-sdl SDL_PeepEvents
+    (_fun (_cpointer _event) _int _int _uint32 _uint32 -> _int))
+  
+  (define-sdl SDL_PollEvent
+    (_fun (_cpointer _event) -> _int)))

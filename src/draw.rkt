@@ -1,14 +1,15 @@
-#lang racket
+#lang racket/base
 
 (require "poly.rkt" 
-         "sdl-core.rkt"
-         (only-in "sdl-structs.rkt" make-color color-r color-g color-b color-a)
-         "sdl-draw.rkt"
+         (submod "sdl-core.rkt" renderer/unsafe)
+         (submod "sdl-core.rkt" renderer-draw/unsafe)
+         (only-in "sdl-structs.rkt" make-color color-r color-g color-b color-a make-rect)
          "_util.rkt"
-         ffi/unsafe)
+         racket/match)
 
 (provide fill-rect!
          draw-rect!
+         draw-line!
          fill-renderer!
          set-renderer-draw-color!
          present-renderer!
@@ -21,32 +22,35 @@
 (define color make-color)
 
 (define (fill-rect! renderer rect)
-  (_fill-rect renderer rect))
+  (SDL_FillRect renderer rect))
 
 (define (set-renderer-draw-color! renderer color)
-  (sdl-success? (_set-renderer-draw-color renderer
-                                          (color-r color)
-                                          (color-g color)
-                                          (color-b color)
-                                          (color-a color))))
+  (sdl-success? (SDL_SetRenderDrawColor renderer
+                                        (color-r color)
+                                        (color-g color)
+                                        (color-b color)
+                                        (color-a color))))
+(define (rect->sdl-rect rect)
+  (match-define (posn x y) (rect-posn rect))
+  (match-define (posn w h) (rect-size rect))
+  (make-rect x y w h))
 
 ;; Outline or something.
 #;(define (fill! renderer)
-  (sdl-success? (_fill-rect renderer 0)))
+  (sdl-success? (SDL_FillRect renderer 0)))
 
 (define (draw-rect! renderer rect)
-  (sdl-success? (_render-draw-rect renderer
-                                   (rect-sdl-rect rect))))
+  (sdl-success? (SDL_RenderDrawRect renderer
+                                   (rect->sdl-rect rect))))
   
 
-(define (draw-line! posn1 posn2)
-  (sdl-success? (_render-draw-line (posn-x posn1)
-                          (posn-y posn1)
-                          (posn-x posn2)
-                          (posn-y posn2))))
+(define (draw-line! renderer posn1 posn2)
+  (sdl-success? (SDL_RenderDrawLine renderer
+                                    (posn-x posn1) (posn-y posn1)
+                                    (posn-x posn2) (posn-y posn2))))
 
 (define (fill-renderer! renderer)
-  (sdl-success? (_render-clear renderer)))
+  (sdl-success? (SDL_RenderClear renderer)))
 
 (define (present-renderer! renderer)
-  (_render-present renderer))
+  (SDL_RenderPresent renderer))

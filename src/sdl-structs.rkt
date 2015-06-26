@@ -154,16 +154,17 @@
    [w _int]
    [h _int]))
 
-(define-cstruct _window-event
-  ([type _uint32]
-   [timestamp _uint32]
-   [windowID _uint32]
-   [event _uint8]
-   [padding1 _uint8]
-   [padding2 _uint8]
-   [padding3 _uint8]
-   [data1 _sint32]
-   [data2 _sint32]))
+(define _scancode _int)
+(define _keycode _int)
+
+(define-cstruct _keysym
+  ([scancode _scancode]
+   [sym _keycode]
+   [mod _uint16]
+   [unused _uint32]))
+
+;;TODO
+(define SDL_JoystickID _int)
 
 (define-cstruct _sw-yuv-texture
   ([format _uint32]
@@ -230,6 +231,14 @@
    [y _float]
    [w _float]
    [h _float]))
+
+(define-cstruct _window-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [event _uint8]
+   [data1 _sint32]
+   [data2 _sint32]))
 
 (define-cstruct _renderer
   ([magic _void-pointer]
@@ -308,4 +317,128 @@
             __int-and-file
             __uint8-pointers-3
             __void-struct)]))
+
+(define-cstruct _key-down-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [state _uint8]
+   [repeat _uint8]
+   [keysym _keysym])) ;;TODO!
+
+(define-cstruct _text-editing-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [test _string] ;;TODO!
+   [state _sint32]
+   [length _sint32]))
+
+(define-cstruct _text-input-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [text _string])) ;; TODO!
+
+(define-cstruct _mouse-motion-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [which _uint32]
+   [state _uint32]
+   [x _sint32]
+   [y _sint32]
+   [xrel _sint32]
+   [yrel _sint32]))
+
+(define-cstruct _mouse-button-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [which _uint32]
+   [button _uint8]
+   [state _uint8]
+   [clicks _uint8]
+   [x _sint32]
+   [y _sint32]))
+
+(define-cstruct _mouse-wheel-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [windowID _uint32]
+   [which _uint32]
+   [x _sint32]
+   [y _sint32]
+   [direction _uint32]))
+
+(define-cstruct _joy-axis-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which SDL_JoystickID] ;;TODO!
+   [axis _uint8]
+   [value _sint16]))
+
+(define-cstruct _joy-ball-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which SDL_JoystickID] ;;TODO!
+   [ball _uint8]
+   [xrel _sint16]
+   [yrel _sint16]))
+
+(define-cstruct _joy-hat-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which SDL_JoystickID]
+   [hat _uint8]
+   [value _uint8]))
    
+(define-cstruct _joy-button-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which SDL_JoystickID] ;;TODO!
+   [button _uint8]
+   [state _uint8]))
+
+(define-cstruct _joy-device-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which _sint8]))
+
+(define-cstruct _controller-axis-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which SDL_JoystickID] ;;TODO!
+   [axis _uint8]
+   [value _sint16]))
+
+(define-cstruct _controller-button-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which SDL_JoystickID] ;;TODO!
+   [button _uint8]
+   [state _uint8]))
+
+(define-cstruct _controller-device-event
+  ([type _uint32]
+   [timestamp _uint32]
+   [which _sint32]))
+
+
+(define _event
+  (make-union-type  _window-event
+                    _key-down-event
+                    _text-editing-event
+                    _text-input-event
+                    _mouse-motion-event
+                    _mouse-button-event
+                    _mouse-wheel-event
+                    _joy-axis-event
+                    _joy-ball-event
+                    _joy-hat-event
+                    _joy-button-event
+                    _joy-device-event
+                    _controller-axis-event
+                    _controller-button-event
+                    _controller-device-event))
+

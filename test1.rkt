@@ -1,15 +1,22 @@
-#lang racket
+#lang racket/base
 
 (require "src/core.rkt"
          "src/poly.rkt"
          "src/draw.rkt")
 
-(with-window win "Rect Test #1" (posn 500 500) (posn 800 600) 0
-             (define renderer (make-renderer win -1 0))
-             (draw-rect! renderer (rect 100 100 100 100))
-             (sleep 3))
+(with-window-and-renderer
+ #:posn (posn 500 500)
+ #:size (posn 800 600)
+ (λ (window renderer)
+   (set-renderer-draw-color! renderer (color 100 100 100 0))
+   (draw-rect! renderer (rect (posn 100 100)
+                              (posn 100 100)))
+   (draw-line! renderer (posn 100 100) (posn 200 200))
+   (present-renderer! renderer)
+   (sleep 3)))
 
-#;(with-window win "Draw Test #1" (posn 500 500) (posn 800 600) 0
+#;
+(with-window win "Draw Test #1" (posn 500 500) (posn 800 600) empty
              (define renderer (make-renderer win -1 0))
              (set-renderer-draw-color! renderer (color 255 128 0 0))
              (fill-renderer! renderer)
@@ -17,7 +24,8 @@
              (sleep 4)
              (destroy-renderer renderer))
 
-#;(begin
+#;
+(begin
   (define (alternate-colors renderer delay-amount colors max-time)
     (define (alternate-colors-iter index time)
       (cond [(= index (length colors))
@@ -32,21 +40,23 @@
              null]))
     (alternate-colors-iter 0 0))
   
-  (with-window win "Draw Test #1" (posn 500 500) (posn 800 600) 0
+  (with-window win "Draw Test #1" (posn 500 500) (posn 800 600) empty
                (define renderer (make-renderer win -1 0))
                (alternate-colors renderer 0.5 (list (color 255 127 0 0) (color 127 255 0 0)) 10)
                (destroy-renderer renderer)))
 
-#;(with-window win "Here we go..." (posn 500 500) (posn 800 600) 0
+#;
+(with-window win "Here we go..." (posn 500 500) (posn 800 600) 0
              (sleep 2)
              (set-window-title! win "...and here we go...")
              (sleep 2)
              (set-window-title! win "...and one last time!")
              (sleep 2))
 
-#;(begin
+#;
+(begin
   (define time-machine null)
-  (with-window win "Here we go..." (posn 500 500) (posn 800 600) 0
+  (with-window win "Here we go..." (posn 500 500) (posn 800 600) empty
                (sleep 2)
                (set-window-title! win "...and here we go...")
                (call/cc (lambda (k) (set! time-machine k)))

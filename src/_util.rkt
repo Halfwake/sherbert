@@ -1,18 +1,20 @@
-#lang racket
+#lang racket/base
+
+(require racket/dict)
 
 (provide flags->int
          int->flags
          sdl-success?)
 
 (define (sdl-success? result)
-  (= 0 result))
+  (zero? result))
 
-(define (flags->int flags)
-  (apply bitwise-ior (map eval flags)))
+(define (flags->int flags flag-table)
+  (apply bitwise-ior
+         (for/list ([flag flags])
+           (dict-ref flag-table flag))))
 
-(define (int->flags int flags)
-  (if (null? flags)
-      '()
-      (if (< 0 (bitwise-and int (eval (car flags))))
-          (cons (car flags) (int->flags int (cdr flags)))
-          (int->flags int (cdr flags)))))
+(define (int->flags int flag-table)
+  (for/list ([flag (dict-keys flag-table)]
+             #:unless (zero? (bitwise-and int (dict-ref flag-table flag))))
+    flag))
